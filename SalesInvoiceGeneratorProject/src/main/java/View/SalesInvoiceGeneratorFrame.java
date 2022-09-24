@@ -415,7 +415,6 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
 
     // method to fill in invoice items table 
     public void invoiceItemsPopulate() throws FileNotFoundException {
-        // define the file path directly , please change upon your machine destination file
         String path = System.getProperty("user.dir")+"\\InvoiceLine.csv";
         System.out.println(path);
         // scan the file with determined path and save it in array string
@@ -470,7 +469,6 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
 
     // method to save invoices from table to csv file
     public void saveInvoicesToFile() throws FileNotFoundException, IOException {
-        // define the file path directly , please change upon your machine destination file
         String path = System.getProperty("user.dir")+"\\InvoiceHeader.csv";
         System.out.println(path);
         DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
@@ -501,8 +499,7 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
 
     //  method to save data from invoice items table to csv file
     public void saveInvoiceItemsToFile() throws IOException {
-        // define the path , please change it upon your machine destination
-        String path = System.getProperty("user.dir")+"\\InvoiceLine.csv";
+        String path = System.getProperty("user.dir")+"\\InvoiceItem.csv";
         System.out.println(path);
         DefaultTableModel model = (DefaultTableModel) itemsTable.getModel();
         String csv = "";
