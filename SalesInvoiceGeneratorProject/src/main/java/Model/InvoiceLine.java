@@ -22,7 +22,7 @@ public class InvoiceLine {
     }
     
     public Double getInvoiceTotal(){
-        return count* itemPrice;
+       return count* itemPrice;
     }
             
     public int getCount() {

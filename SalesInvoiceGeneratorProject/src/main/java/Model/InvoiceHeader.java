@@ -25,21 +25,25 @@ public class InvoiceHeader {
     
     public Double getTotal(){
         double total =0.0;
-        for (int i =0; i< lines.size(); i++){
+        for (int i =0; i< getLines().size(); i++){
             InvoiceLine line = lines.get(i);
             total += line.getInvoiceTotal();
+            System.out.println("total"+ total);
         }
         return total;
     }
 
     public ArrayList<InvoiceLine> getLines() {
+        if (lines == null){
+            lines = new ArrayList<>();
+        }
         return lines;
     } 
 
     public int getInvoiceNum() {
         return invoiceNum;
     }
-
+    
     public Date getInvoiceDate() {
         return invoiceDate;
     }

@@ -4,51 +4,31 @@
  */
 package View;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFileChooser;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
+import Controller.Controller;
+import Model.HeaderTableModel;
+import Model.InvoiceHeader;
+import Model.InvoiceLine;
+import Model.LineTableModel;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 
 /**
  *
  * @author DELL
  */
-public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements ActionListener {
+public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
 
     /**
      * Creates new form SalesInvoiceGeneratorFrame
      */
-    public SalesInvoiceGeneratorFrame() throws FileNotFoundException {
+    public SalesInvoiceGeneratorFrame() {
         initComponents(); // to initiate the Frame components 
-        // listener to load file menuitem in the menu and set action to it
-        loadMenuItem.addActionListener(this);
-        loadMenuItem.setActionCommand("L");
-        // listener to save file menuitem in the menu and set action to it
-        saveMenuItem.addActionListener((ActionListener) this);
-        saveMenuItem.setActionCommand("S");
         // calling method listener to select invoices table row and fill invoice labels
-        selectRow();
-        // listener to create new invoice button and set action to it
-        createInvoiceBtn.addActionListener(this);
-        createInvoiceBtn.setActionCommand("C");
-        // listener to delete invoice button and set action to it
-        deleteInvoiceBtn.addActionListener(this);
-        deleteInvoiceBtn.setActionCommand("D");
-        // listener to add invoice item button and set action to it
-        addItemBtn.addActionListener(this);
-        addItemBtn.setActionCommand("A");
-        // listener to save invoice item button and set action to it
-        saveItemBtn.addActionListener(this);
-        saveItemBtn.setActionCommand("I");
+        listener.selectRow();
 
     }
 
@@ -78,14 +58,19 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
         jScrollPane2 = new javax.swing.JScrollPane();
         itemsTable = new javax.swing.JTable();
         createInvoiceBtn = new javax.swing.JButton();
+        createInvoiceBtn.addActionListener(listener);
         deleteInvoiceBtn = new javax.swing.JButton();
+        deleteInvoiceBtn.addActionListener(listener);
         saveItemBtn = new javax.swing.JButton();
-        cancelChangesItemsBtn = new javax.swing.JButton();
+        saveItemBtn.addActionListener(listener);
         addItemBtn = new javax.swing.JButton();
+        addItemBtn.addActionListener(listener);
         jMenuBar1 = new javax.swing.JMenuBar();
         FileMenu = new javax.swing.JMenu();
         loadMenuItem = new javax.swing.JMenuItem();
+        loadMenuItem.addActionListener(listener);
         saveMenuItem = new javax.swing.JMenuItem();
+        saveMenuItem.addActionListener(listener);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,7 +79,7 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
 
             },
             new String [] {
-                "Invoice Number", "Date", "Customer Name"
+                "colum1", "colum2", "colum3", "colum4"
             }
         ));
         jScrollPane1.setViewportView(invoicesTable);
@@ -124,32 +109,38 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
 
             },
             new String [] {
-                "Invoice Number", "Item Name", "Price", "Count"
+                "column1", "column2", "column3", "column4"
             }
         ));
         jScrollPane2.setViewportView(itemsTable);
 
+        createInvoiceBtn.setActionCommand("C");
         createInvoiceBtn.setLabel("Create New Invoice");
 
+        deleteInvoiceBtn.setActionCommand("D");
         deleteInvoiceBtn.setLabel("Delete Invoice");
 
         saveItemBtn.setText(" Save Item");
+        saveItemBtn.setToolTipText("");
+        saveItemBtn.setActionCommand("I");
         saveItemBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveItemBtnActionPerformed(evt);
             }
         });
 
-        cancelChangesItemsBtn.setText("Cancel");
-
         addItemBtn.setText("Add Item");
+        addItemBtn.setToolTipText("");
+        addItemBtn.setActionCommand("A");
 
         FileMenu.setText("File");
 
         loadMenuItem.setText("Load File");
+        loadMenuItem.setActionCommand("L");
         FileMenu.add(loadMenuItem);
 
         saveMenuItem.setText("Save File");
+        saveMenuItem.setActionCommand("S");
         FileMenu.add(saveMenuItem);
 
         jMenuBar1.add(FileMenu);
@@ -189,12 +180,10 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
                         .addComponent(createInvoiceBtn)
                         .addGap(18, 18, 18)
                         .addComponent(deleteInvoiceBtn)
-                        .addGap(134, 134, 134)
+                        .addGap(173, 173, 173)
                         .addComponent(addItemBtn)
-                        .addGap(34, 34, 34)
-                        .addComponent(saveItemBtn)
-                        .addGap(38, 38, 38)
-                        .addComponent(cancelChangesItemsBtn)))
+                        .addGap(49, 49, 49)
+                        .addComponent(saveItemBtn)))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -229,7 +218,6 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(deleteInvoiceBtn)
                     .addComponent(createInvoiceBtn)
-                    .addComponent(cancelChangesItemsBtn)
                     .addComponent(addItemBtn)
                     .addComponent(saveItemBtn))
                 .addContainerGap(22, Short.MAX_VALUE))
@@ -274,12 +262,9 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    // initate the app and load the frame form
-                    new SalesInvoiceGeneratorFrame().setVisible(true);
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                // initate the app and load the frame form
+                SalesInvoiceGeneratorFrame obj = new SalesInvoiceGeneratorFrame();
+                obj.setVisible(true);
             }
         });
     }
@@ -287,7 +272,6 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu FileMenu;
     private javax.swing.JButton addItemBtn;
-    private javax.swing.JButton cancelChangesItemsBtn;
     private javax.swing.JButton createInvoiceBtn;
     private javax.swing.JLabel customerNameLb;
     private javax.swing.JButton deleteInvoiceBtn;
@@ -311,213 +295,69 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame implements Ac
     private javax.swing.JMenuItem saveMenuItem;
     // End of variables declaration//GEN-END:variables
 
-    // action listener method
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // switch of returned action event and calling methods upon it
-        switch (e.getActionCommand()) {
-            // in case returned event is for load file action, the app will call load method
-            case "L": {
-                try {
-                    loadFile();
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            break;
-            // in case returned event is for save file action, the app will call save invoices method
-            case "S": {
-                try {
-                    saveInvoicesToFile();
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            break;
-            // in case returned event is for create new invoice button action, the app will call create method
-            case "C":
-                createNewInvoiceRowInTable();
-                break;
-            // in case returned event is for delete invoice button action, the app will call delete method
-            case "D":
-                deleteInvoiceFromTable();
-                break;
-            // in case returned event is for add new item button action, the app will call add item method
-            case "A":
-                AddInvoiceItemRowInTable();
-                break;
-            // in case returned event is for save item button action, the app will call save item method
-            case "I": {
-                try {
-                    saveInvoiceItemsToFile();
-                } catch (IOException ex) {
-                    Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            break;
+    // Controller 
+    public Controller listener = new Controller(this);
+    public ArrayList<InvoiceHeader> invoices = new ArrayList<>();
+    public static DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    public HeaderTableModel headerTableModel;
+    public LineTableModel lineTableModel;
 
+    public LineTableModel getLineTableModel() {
+        return lineTableModel;
+    }
+
+    public void setLineTableModel(LineTableModel lineTableModel) {
+        this.lineTableModel = lineTableModel;
+        itemsTable.setModel(lineTableModel);
+    }
+
+    public ArrayList<InvoiceHeader> getInvoices() {
+        return invoices;
+    }
+
+    public HeaderTableModel getHeaderTableModel() {
+        return headerTableModel;
+    }
+
+    public void setHeaderTableModel(HeaderTableModel headerTableModel) {
+        this.headerTableModel = headerTableModel;
+        invoicesTable.setModel(headerTableModel);
+    }
+
+    public JTable getInvoicesTable() {
+        return invoicesTable;
+    }
+
+    public JOptionPane getMessagePane() {
+        return messagePane;
+    }
+
+    public JTable getItemsTable() {
+        return itemsTable;
+    }
+
+    public JLabel getInvoiceDateLb() {
+        return invoiceDateLb;
+    }
+
+    public JLabel getInvoiceNumLb() {
+        return invoiceNumLb;
+    }
+
+    public JLabel getCustomerNameLb() {
+        return customerNameLb;
+    }
+
+    public JLabel getInvoiceTotalLb() {
+        return invoiceTotalLb;
+    }
+
+    public InvoiceHeader getInvoiceByNum(int lineNumber) {
+        for (InvoiceHeader inv : invoices) {
+            if(inv.getInvoiceNum()== lineNumber)
+                return inv;
         }
-    }
-
-    // method to load csv invoices header file and fill in invoices table
-    public void loadFile() throws FileNotFoundException {
-        // open file chooser and choose file and get file path
-        JFileChooser choose = new JFileChooser();
-        var result = choose.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            String path = choose.getSelectedFile().getPath();
-            // scan the file with determined path and save it in array string
-            try ( Scanner sc = new Scanner(new File(path))) {
-                String[] array;
-                // get the invoices table model 
-                DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
-                // loop over the file and check if there is lines to read it
-                while (sc.hasNextLine()) {
-                    // read each line of the file scanner 
-                    String line = sc.nextLine();
-                    // slit the columns of the file with , and add it to array string
-                    array = line.split(",");
-                    Object[] data = new Object[array.length];
-                    // read the data from array string and add it to data object
-                    for (int i = 0; i < array.length; i++) {
-                        data[i] = array[i];
-                    }
-                    // fill in the invoices table row with data from file as per table model 
-                    model.addRow(data);
-                }
-            }
-        }
-    }
-
-    // method for selecting row of ivoices table and fill in invoices labels and items table
-    public void selectRow() {
-        // get the selected row listener event and check it is returning value
-        invoicesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting() && invoicesTable.getSelectedRow() != -1) {
-                    // fill in invoice labels with data of the selected invoice row 
-                    invoiceNumLb.setText(invoicesTable.getValueAt(invoicesTable.getSelectedRow(), 0).toString());
-                    invoiceDateLb.setText(invoicesTable.getValueAt(invoicesTable.getSelectedRow(), 1).toString());
-                    customerNameLb.setText(invoicesTable.getValueAt(invoicesTable.getSelectedRow(), 2).toString());
-                    try {
-                        // call the invoice items method to fill in items table for the selected invoice row
-                        invoiceItemsPopulate();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        });
-
-    }
-
-    // method to fill in invoice items table 
-    public void invoiceItemsPopulate() throws FileNotFoundException {
-        String path = System.getProperty("user.dir")+"\\InvoiceLine.csv";
-        System.out.println(path);
-        // scan the file with determined path and save it in array string
-        try ( Scanner sc = new Scanner(new File(path))) {
-            String[] array;
-            // get the invoice items table model
-            DefaultTableModel model = (DefaultTableModel) itemsTable.getModel();
-            // clear the table before load data
-            model.setRowCount(0);
-            // scan the lines of items file and split columns with ,
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                array = line.split(",");
-                Object[] data = new Object[array.length];
-                // check if the invoice number equal the invoice number in items table to fill in data of this invoice
-                if (invoiceNumLb.getText().equals(array[0])) {
-                    for (int i = 0; i < array.length; i++) {
-                        data[i] = array[i];
-                    }
-                    model.addRow(data);
-                }
-            }
-        }
-    }
-
-    // method to add new empty row in invoices table and user could fill in it manually
-    public void createNewInvoiceRowInTable() {
-        DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
-        model.addRow(new Object[]{"", "", ""});
-    }
-
-    // method to delete selected row from invoices table and clear related labels and invoice items
-    public void deleteInvoiceFromTable() {
-        // get model of invoices table
-        DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
-        // get model of invoice items table
-        DefaultTableModel itemsModel = (DefaultTableModel) itemsTable.getModel();
-        // check if the selected row has value
-        if (invoicesTable.getSelectedRow() != -1) {
-            // remove the selected row from invoices table
-            model.removeRow(invoicesTable.getSelectedRow());
-            // clear invoice labels of the selected invoice row 
-            invoiceNumLb.setText("");
-            invoiceDateLb.setText("");
-            customerNameLb.setText("");
-            // clear invoice items related to that invoice row
-            itemsModel.setRowCount(0);
-            // information message that deletion done
-            messagePane.showMessageDialog(this, "Invoice Deleted Successfully");
-        }
-    }
-
-    // method to save invoices from table to csv file
-    public void saveInvoicesToFile() throws FileNotFoundException, IOException {
-        String path = System.getProperty("user.dir")+"\\InvoiceHeader.csv";
-        System.out.println(path);
-        DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
-        String csv = "";
-        // loop on every row and colum of invoices table and save in string variable 
-        for (int i = 0; i < model.getRowCount(); i++) {
-            for (int j = 0; j < model.getColumnCount(); j++) {
-                csv += model.getValueAt(i, j).toString() + ",";
-            }
-            csv += "\n";
-        }
-        // create writer file and assign determined file path 
-        FileWriter saveFile = new FileWriter(new File(path));
-        // fill in object of the file with data string of csv saved in pervious loop
-        saveFile.write(csv);
-        // show information message with saving success
-        messagePane.showMessageDialog(this, "File Saved successfully");
-        // please open the file and check the saved data 
-        saveFile.flush();
-        saveFile.close();
-    }
-
-    // method to add new empty invoice item in items table and user could enter manaully 
-    public void AddInvoiceItemRowInTable() {
-        DefaultTableModel model = (DefaultTableModel) itemsTable.getModel();
-        model.addRow(new Object[]{"", "", ""});
-    }
-
-    //  method to save data from invoice items table to csv file
-    public void saveInvoiceItemsToFile() throws IOException {
-        String path = System.getProperty("user.dir")+"\\InvoiceItem.csv";
-        System.out.println(path);
-        DefaultTableModel model = (DefaultTableModel) itemsTable.getModel();
-        String csv = "";
-        // looping over rows and columns and save to string var
-        for (int i = 0; i < model.getRowCount(); i++) {
-            for (int j = 0; j < model.getColumnCount(); j++) {
-                csv += model.getValueAt(i, j).toString() + ",";
-            }
-            csv += "\n";
-        }
-        // write data to file object 
-        FileWriter saveFile = new FileWriter(new File(path));
-        saveFile.write(csv);
-        // information message with saving success
-        messagePane.showMessageDialog(this, "File Saved successfully");
-        // please open the save file and check the data saved 
-        saveFile.flush();
-        saveFile.close();
+        return null;
     }
 
 }
