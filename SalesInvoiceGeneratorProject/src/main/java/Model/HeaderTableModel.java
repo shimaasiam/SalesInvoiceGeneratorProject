@@ -5,13 +5,16 @@
 package Model;
 
 import View.SalesInvoiceGeneratorFrame;
+import java.awt.Component;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -70,12 +73,18 @@ public class HeaderTableModel extends AbstractTableModel {
             case 0:
                 header.setInvoiceNum(Integer.parseInt(String.valueOf(aValue)));
                 break;
-            case 1: {
-                try {
-                    header.setInvoiceDate(SalesInvoiceGeneratorFrame.sdf.parse(String.valueOf(aValue)));
-                } catch (ParseException ex) {
-                    Logger.getLogger(HeaderTableModel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            case 1: 
+                  try {
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.US).withResolverStyle(ResolverStyle.SMART);
+                var cal = dateFormatter.parse(aValue.toString());
+                header.setInvoiceDate(SalesInvoiceGeneratorFrame.sdf.parse(String.valueOf(aValue)));
+            } catch (DateTimeException cc) {
+                javax.swing.JOptionPane messagePane = new javax.swing.JOptionPane();
+                Component _SalesInvoiceGeneratorFrame = null;
+                messagePane.showMessageDialog(_SalesInvoiceGeneratorFrame, "Invalid Date Value Format ");
+                header.setInvoiceDate(new Date());
+            } catch (ParseException ex) {
+                Logger.getLogger(HeaderTableModel.class.getName()).log(Level.SEVERE, null, ex);
             }
             break;
 
@@ -85,5 +94,5 @@ public class HeaderTableModel extends AbstractTableModel {
         }
         fireTableRowsUpdated(rowIndex, columnIndex);
     }
-    
+
 }

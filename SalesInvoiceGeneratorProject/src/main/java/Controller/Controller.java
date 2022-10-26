@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -24,7 +23,6 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -41,7 +39,6 @@ public class Controller implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("action performed ");
         String command = e.getActionCommand();
         // switch of returned action event and calling methods upon it
         switch (command) {
@@ -94,12 +91,13 @@ public class Controller implements ActionListener {
     // method to load csv invoices header file and fill in invoices table
     public void loadFile() throws FileNotFoundException, ParseException {
         // open file chooser and choose file and get file path
-        JFileChooser choose = new JFileChooser();
-        var result = choose.showOpenDialog(frame);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            String path = choose.getSelectedFile().getPath();
-            // scan the file with determined path and save it in array string
-            try ( Scanner sc = new Scanner(new File(path))) {
+        try {
+            JFileChooser choose = new JFileChooser();
+            var result = choose.showOpenDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String path = choose.getSelectedFile().getPath();
+                // scan the file with determined path and save it in array string
+                Scanner sc = new Scanner(new File(path));
                 String[] array;
                 frame.getInvoices().clear();
                 // loop over the file and check if there is lines to read it
@@ -117,61 +115,18 @@ public class Controller implements ActionListener {
                         Date invDate = frame.sdf.parse(dateString);
                         int invNumber = Integer.parseInt(numString);
                         inv = new InvoiceHeader(invNumber, invDate, nameString);
-                        invoiceItemsPopulate2(invNumber);
+                        invoiceItemsPopulate(invNumber);
                     }
                     frame.getInvoices().add(inv);
                 }
                 frame.setHeaderTableModel(new HeaderTableModel(frame.getInvoices()));
             }
+        } catch (Exception ex) {
+            frame.getMessagePane().showMessageDialog(frame, "invalid File");
         }
     }
 
-    // method to fill in invoice items table 
-    public void invoiceItemsPopulate() throws FileNotFoundException {
-        InvoiceLine invLine = null;
-        String path = System.getProperty("user.dir") + "\\InvoiceLine.csv";
-        // scan the file with determined path and save it in array string
-        try ( Scanner sc = new Scanner(new File(path))) {
-            String[] array;
-            // clear the table before load data
-            inv.getLines().clear();
-            // scan the lines of items file and split columns with 
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                array = line.split(",");
-                // check if the invoice number equal the invoice number in items table to fill in data of this invoice
-                if (frame.getInvoiceNumLb().getText().equals(array[0])) {
-                    for (int i = 0; i < array.length; i++) {
-                        //    data[i] = array[i];
-                        // fill in the class of invoices lines
-                        int lineNumber = Integer.parseInt(array[0]);
-                        String nameString = array[1];
-                        Double linePrice = Double.parseDouble(array[2]);
-                        int lineCount = Integer.parseInt(array[3]);
-                        InvoiceHeader invoice = frame.getInvoiceByNum(lineNumber);
-                        invLine = new InvoiceLine(invoice, nameString, linePrice, lineCount);
-                    }
-                    inv.getLines().add(invLine);
-                }
-            }
-            frame.setLineTableModel(new LineTableModel(inv.getLines()));
-        }
-    }
-
-    public void invoiceItems() throws FileNotFoundException {
-//        inv.getLines().clear();
-        InvoiceHeader selectedInvoice = null;
-        int x = Integer.valueOf(frame.getInvoiceNumLb().getText());
-        for (int i = 0; i < frame.getInvoices().size(); i++) {
-            if (x == frame.getInvoices().get(i).getInvoiceNum()) {
-                selectedInvoice = frame.getInvoices().get(i);
-                break;
-            }
-        }
-        frame.setLineTableModel(new LineTableModel(selectedInvoice.getLines()));
-    }
-
-    public void invoiceItemsPopulate2(int invoiceNo) throws FileNotFoundException {
+     public void invoiceItemsPopulate(int invoiceNo) throws FileNotFoundException {
         InvoiceLine invLine = null;
         String path = System.getProperty("user.dir") + "\\InvoiceLine.csv";
         // scan the file with determined path and save it in array string
@@ -199,11 +154,19 @@ public class Controller implements ActionListener {
             frame.setLineTableModel(new LineTableModel(inv.getLines()));
         }
     }
+   
+    public void invoiceItems() throws FileNotFoundException {
+        InvoiceHeader selectedInvoice = null;
+        int x = Integer.valueOf(frame.getInvoiceNumLb().getText());
+        for (int i = 0; i < frame.getInvoices().size(); i++) {
+            if (x == frame.getInvoices().get(i).getInvoiceNum()) {
+                selectedInvoice = frame.getInvoices().get(i);
+                break;
+            }
+        }
+        frame.setLineTableModel(new LineTableModel(selectedInvoice.getLines()));
+    }
 
-//    public void ShowInvoiceLines(InvoiceHeader Invoice) {
-//        frame.setLineTableModel(new LineTableModel(Invoice.getLines()));
-//
-//    }
     // method to save invoices from table to csv file
     public void saveInvoicesToFile() throws FileNotFoundException, IOException {
         String path = System.getProperty("user.dir") + "\\InvoiceHeader.csv";
@@ -306,8 +269,7 @@ public class Controller implements ActionListener {
                     frame.getInvoiceTotalLb().setText(frame.getInvoicesTable().getValueAt(frame.getInvoicesTable().getSelectedRow(), 3).toString());
                     try {
                         // call the invoice items method to fill in items table for the selected invoice row
-                      //  invoiceItemsPopulate();
-                      invoiceItems();
+                        invoiceItems();
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(SalesInvoiceGeneratorFrame.class.getName()).log(Level.SEVERE, null, ex);
                     }

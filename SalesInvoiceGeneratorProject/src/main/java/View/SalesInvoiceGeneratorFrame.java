@@ -7,7 +7,6 @@ package View;
 import Controller.Controller;
 import Model.HeaderTableModel;
 import Model.InvoiceHeader;
-import Model.InvoiceLine;
 import Model.LineTableModel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
