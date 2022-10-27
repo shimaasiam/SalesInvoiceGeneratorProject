@@ -85,6 +85,10 @@ public class Controller implements ActionListener {
                 }
             }
             break;
+            // in case returned event is for delete item button action, the app will call delete method
+            case "DI":
+                deleteInvoiceItemFromTable();
+                break;
         }
     }
 
@@ -126,7 +130,7 @@ public class Controller implements ActionListener {
         }
     }
 
-     public void invoiceItemsPopulate(int invoiceNo) throws FileNotFoundException {
+    public void invoiceItemsPopulate(int invoiceNo) throws FileNotFoundException {
         InvoiceLine invLine = null;
         String path = System.getProperty("user.dir") + "\\InvoiceLine.csv";
         // scan the file with determined path and save it in array string
@@ -154,7 +158,7 @@ public class Controller implements ActionListener {
             frame.setLineTableModel(new LineTableModel(inv.getLines()));
         }
     }
-   
+
     public void invoiceItems() throws FileNotFoundException {
         InvoiceHeader selectedInvoice = null;
         int x = Integer.valueOf(frame.getInvoiceNumLb().getText());
@@ -203,7 +207,6 @@ public class Controller implements ActionListener {
         int row = frame.getInvoicesTable().getSelectedRow();
         if (row != -1) {
             int num = Integer.parseInt(frame.getInvoicesTable().getValueAt(row, 0).toString());
-            System.out.println("num is " + num);
             InvoiceHeader inv = frame.getInvoiceByNum(num);
             // remove the selected row from invoices table
             frame.getInvoices().remove(row);
@@ -277,5 +280,20 @@ public class Controller implements ActionListener {
             }
         });
 
+    }
+
+    // delete item form table and invoice 
+    public void deleteInvoiceItemFromTable() {
+        int x = Integer.valueOf(frame.getInvoiceNumLb().getText());
+        int line = frame.getItemsTable().getSelectedRow();
+        if (line != -1) {
+            InvoiceHeader inv = frame.getInvoiceByNum(x);
+            // remove the selected row from invoices table
+            inv.getLines().remove(line);
+            frame.lineTableModel.fireTableDataChanged();
+            frame.setLineTableModel(new LineTableModel(inv.getLines()));
+            // information message that deletion done
+            frame.getMessagePane().showMessageDialog(frame, "Item Deleted Successfully");
+        }
     }
 }

@@ -64,6 +64,8 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
         saveItemBtn.addActionListener(listener);
         addItemBtn = new javax.swing.JButton();
         addItemBtn.addActionListener(listener);
+        deleteItemBtn = new javax.swing.JButton();
+        deleteItemBtn.addActionListener(listener);
         jMenuBar1 = new javax.swing.JMenuBar();
         FileMenu = new javax.swing.JMenu();
         loadMenuItem = new javax.swing.JMenuItem();
@@ -132,6 +134,15 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
         addItemBtn.setToolTipText("");
         addItemBtn.setActionCommand("A");
 
+        deleteItemBtn.setText(" Delete Item");
+        deleteItemBtn.setToolTipText("");
+        deleteItemBtn.setActionCommand("DI");
+        deleteItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteItemBtnActionPerformed(evt);
+            }
+        });
+
         FileMenu.setText("File");
 
         loadMenuItem.setText("Load File");
@@ -151,39 +162,40 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(25, 25, 25)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGap(25, 25, 25)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(invoiceNumLb)
-                                            .addComponent(invoiceDateLb)
-                                            .addComponent(customerNameLb)
-                                            .addComponent(invoiceTotalLb)))
-                                    .addComponent(itemTableLabel)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(invoicesTableLabel)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(67, 67, 67)
-                        .addComponent(createInvoiceBtn)
-                        .addGap(18, 18, 18)
-                        .addComponent(deleteInvoiceBtn)
-                        .addGap(173, 173, 173)
-                        .addComponent(addItemBtn)
-                        .addGap(49, 49, 49)
-                        .addComponent(saveItemBtn)))
-                .addContainerGap(12, Short.MAX_VALUE))
+                                    .addComponent(invoiceNumLb)
+                                    .addComponent(invoiceDateLb)
+                                    .addComponent(customerNameLb)
+                                    .addComponent(invoiceTotalLb)))
+                            .addComponent(itemTableLabel)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(invoicesTableLabel))
+                .addContainerGap(13, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(67, 67, 67)
+                .addComponent(createInvoiceBtn)
+                .addGap(18, 18, 18)
+                .addComponent(deleteInvoiceBtn)
+                .addGap(129, 129, 129)
+                .addComponent(addItemBtn)
+                .addGap(18, 18, 18)
+                .addComponent(deleteItemBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(saveItemBtn)
+                .addGap(68, 68, 68))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,8 +229,10 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(deleteInvoiceBtn)
                     .addComponent(createInvoiceBtn)
-                    .addComponent(addItemBtn)
-                    .addComponent(saveItemBtn))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(saveItemBtn)
+                        .addComponent(deleteItemBtn)
+                        .addComponent(addItemBtn)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
@@ -230,6 +244,10 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
     private void saveItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveItemBtnActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_saveItemBtnActionPerformed
+
+    private void deleteItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteItemBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deleteItemBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -274,6 +292,7 @@ public class SalesInvoiceGeneratorFrame extends javax.swing.JFrame {
     private javax.swing.JButton createInvoiceBtn;
     private javax.swing.JLabel customerNameLb;
     private javax.swing.JButton deleteInvoiceBtn;
+    private javax.swing.JButton deleteItemBtn;
     private javax.swing.JLabel invoiceDateLb;
     private javax.swing.JLabel invoiceNumLb;
     private javax.swing.JLabel invoiceTotalLb;
